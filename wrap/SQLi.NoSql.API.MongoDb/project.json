@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net452": {
+      "wrappedProject": "../../SQLi.NoSql.API.MongoDb/SQLi.NoSql.API.MongoDb.csproj",
+      "bin": {
+        "assembly": "../../SQLi.NoSql.API.MongoDb/obj/{configuration}/SQLi.NoSql.API.MongoDb.dll",
+        "pdb": "../../SQLi.NoSql.API.MongoDb/obj/{configuration}/SQLi.NoSql.API.MongoDb.pdb"
+      },
+      "dependencies": {
+        "MongoDB.Bson": "1.0.0-*",
+        "MongoDB.Driver.Core": "1.0.0-*",
+        "MongoDB.Driver": "1.0.0-*",
+        "MongoDB.Driver.GridFS": "1.0.0-*",
+        "MongoDB.Driver.Legacy": "1.0.0-*"
+      }
+    }
+  }
+}

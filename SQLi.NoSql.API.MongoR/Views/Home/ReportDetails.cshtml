@@ -1,0 +1,201 @@
+﻿
+@model SQLi.NoSql.API.MongoR.Models.ReportConfigurationModel
+@using System.Data
+@using System.Linq;
+@using System.Dynamic;
+
+@{
+    ViewBag.Title = "ReportDetails";
+}
+
+<div class="form-horizontal">
+
+@using (Html.BeginForm("Filter", "Home"))
+{
+    @Html.AntiForgeryToken()
+
+        <h4>FilterConfig</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+
+            @if (Model.CurrentReport != null && Model.CurrentReport.FilterList != null)
+            {
+                foreach (var filter in Model.CurrentReport.FilterList)
+                {
+
+                    var value = Model.CurrentReport.FilterDataValue[filter.Name];
+
+                    if (filter.Type == "Text")
+                    {
+
+                        @Html.Label(filter.DisplayName)                       
+                        @Html.TextBox(filter.Name, value)
+
+                    }
+
+                    if (filter.Type == "Date")
+                    {
+
+                        @Html.Label(filter.DisplayName)
+                        @Html.TextBox(filter.Name, value)
+
+                    }
+
+                    if (filter.Type == "List")
+                    {
+                        var source = new List<SelectListItem>();
+                        var tmps = filter.Source.Split(',');
+
+                        foreach (var tmp in tmps)
+                        {
+                            var item = new SelectListItem()
+                            {
+                                Text = tmp,
+                                Value = tmp
+
+                            };
+                            if (value != null && value.ToString() == tmp)
+                            {
+                                item.Selected = true;
+                            }
+
+                            source.Add(item);
+
+                        }
+
+                        @Html.Label(filter.DisplayName)
+                        @Html.DropDownList(filter.Name, source);
+                    }
+
+
+                }
+            }
+
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Filtrer" class="btn btn-default" />
+            </div>
+        </div>  
+
+ }
+         
+  @if (Model.CurrentReport != null &&
+                               Model.CurrentReport.Grid.ResultSet != null &&
+                                   Model.CurrentReport.Grid.ResultSet.Tables.Count > 0)
+  {
+
+      //Dipalying table header
+      var cpt = Model.CurrentReport.CurrentPage * Model.CurrentReport.Grid.MaxInPage;
+
+      var headers = new List<WebGridColumn>();
+
+
+      var result = new List<dynamic>();
+
+      foreach (DataRow row in Model.CurrentReport.Grid.ResultSet.Tables[0].Rows)
+      {
+          var obj = (IDictionary<string, object>)new ExpandoObject();
+          foreach (DataColumn col in Model.CurrentReport.Grid.ResultSet.Tables[0].Columns)
+          {
+              obj.Add(col.ColumnName, row[col.ColumnName]);
+          }
+          result.Add(obj);
+      }
+
+      var grid = new WebGrid(rowsPerPage: Model.CurrentReport.Grid.MaxInPage,canPage:true);
+
+      grid.Bind(result, autoSortAndPage: true, rowCount: Model.CurrentReport.ResultCount);
+
+      foreach (var coloumn in Model.CurrentReport.Grid.Column)
+      {
+          var tmp = grid.Column(coloumn.Name, coloumn.Header);
+          headers.Add(tmp);
+
+      }
+
+      <div>
+          @grid.GetHtml(
+                tableStyle: "table",
+                alternatingRowStyle: "alternate",
+                headerStyle: "header",
+                selectedRowStyle: "select",
+                mode: WebGridPagerModes.All,
+                firstText: "<< First",
+                previousText: "< Prev",
+                nextText: "Next >",
+                lastText: "Last >>",
+                columns: grid.Columns(
+                  headers.ToArray()
+                )
+        )
+      </div>
+
+          <div>@Html.ActionLink("Export Excel", "ExcelExport");</div>
+
+           <table>
+               <tr>
+                   <td> Total ligne : </td>
+                   <td> @Html.Label(Model.CurrentReport.ResultCount.ToString())</td>
+                   <td>  page :</td>
+                   <td> @Html.Label((Model.CurrentReport.CurrentPage +1).ToString()) </td>
+                   <td>  Total Page :</td>
+                   <td> @Html.Label(Model.CurrentReport.PageCount.ToString()) </td>
+               </tr>
+
+           </table>
+
+            using (Html.BeginForm("Pagination", "Home"))
+            {
+                @Html.AntiForgeryToken()
+               <table>
+                   <tr>
+                       <td>
+                           <div class="col-md-offset-2 col-md-10">
+                               @Html.Label("Page : ")
+                              
+                            </div>
+                       </td>
+                       <td>
+                           <div class="col-md-offset-2 col-md-10">
+                               @Html.TextBox("pageNumbre", (Model.CurrentReport.CurrentPage + 1));
+                           </div>
+                       </td>
+
+                       <td>
+                           <div class="col-md-offset-2 col-md-10">
+                               <input type="submit" value="OK" class="btn btn-default" />
+                           </div>
+                       </td>
+                      
+                   </tr>
+               </table>
+      }
+
+        <div>@Html.ActionLink("Display Graphs", "DisplayGraphs");</div>
+        <div>
+
+        @{
+            var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Green)
+                .AddTitle("Chart Title")
+                .AddSeries(
+                    name: "ChartTitle",
+                    xValue: new[] { "Col1", "Col2", "Col3", "Col4", "Col5" },
+                    yValues: new[] { "2", "6", "4", "5", "3" })
+                .Write();
+        }
+           
+        </div>
+
+      if(Model.CurrentReport.DisplayGraphs)
+      {
+     
+      }
+
+  }
+       
+    </div>
+
+
+
+
+

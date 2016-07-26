@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net452": {
+      "bin": {
+        "assembly": "../../bins/mongo-csharp-driver-master/MongoDB.Driver.dll"
+      },
+      "dependencies": {
+        "MongoDB.Bson": "1.0.0-*",
+        "MongoDB.Driver.Core": "1.0.0-*"
+      }
+    }
+  }
+}
