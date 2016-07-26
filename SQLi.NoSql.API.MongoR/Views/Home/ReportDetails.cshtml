@@ -173,8 +173,7 @@
 
         <div>@Html.ActionLink("Display Graphs", "DisplayGraphs");</div>
         <div>
-
-        @{
+            <img  resource="@{
             var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Green)
                 .AddTitle("Chart Title")
                 .AddSeries(
@@ -182,7 +181,9 @@
                     xValue: new[] { "Col1", "Col2", "Col3", "Col4", "Col5" },
                     yValues: new[] { "2", "6", "4", "5", "3" })
                 .Write();
-        }
+        }"/>
+
+        
            
         </div>
 
