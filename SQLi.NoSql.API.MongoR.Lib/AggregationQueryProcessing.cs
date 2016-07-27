@@ -204,6 +204,21 @@ namespace SQLi.NoSql.API.MongoR.Lib
             return report;
         }
 
+        public static Report BuildGraphicalCharts(Report report)
+        {
+            var aggregationFrameWork = new AggregationFrameWorkPipline(report.ServerUri,
+                                                                           report.ServerPort,
+                                                                           report.DataBase,
+                                                                           report.CollectionName);
+
+            var result = aggregationFrameWork.Execute(report.Query, -1, -1, -1);
+
+            BuildExcelResult(report, result.Item1);
+            BuildChartsData(report);
+
+            return report;
+        }
+
         public static Report ExcelExport(Report report)
         {
 
@@ -217,6 +232,15 @@ namespace SQLi.NoSql.API.MongoR.Lib
             BuildExcelResult(report, result.Item1);
 
             return report;
+        }
+
+        private static void BuildChartsData(Report report)
+        {
+           
+            
+
+            //report.Grid.ExcelResultSet = resultGrid;
+
         }
 
         private static void BuildExcelResult(Report report, List<BsonDocument> resultSet)

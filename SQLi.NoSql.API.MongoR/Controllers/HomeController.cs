@@ -116,5 +116,16 @@ namespace SQLi.NoSql.API.MongoR.Controllers
 
             return RedirectToAction("ReportDetails");
         }
+
+
+        public ActionResult DrawChart()
+        {
+            var model = new ReportConfigurationModel();
+            ConfigurationModel.LoadReportConfiguration();
+            model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
+            AggregationQueryProcessing.BuildGraphicalCharts(model.CurrentReport);
+
+            return View("dynamicCharts", model);
+        }
     }
 }

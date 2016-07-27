@@ -149,6 +149,32 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                    
                 _configDictionnary.Add(report.ReportName, report);
 
+
+                // Process Graph
+
+                report.GraphList = new List<Graph>();
+                var graphicsdNode = reportNode.Descendants("charts");
+                if(graphicsdNode != null && graphicsdNode.Descendants("chart") != null && 
+                    graphicsdNode.Descendants("chart").ToList() != null && 
+                    graphicsdNode.Descendants("chart").ToList().Count() >0)
+                {
+                    var chartList = graphicsdNode.Descendants("chart").ToList();
+                    foreach(var chart in chartList)
+                    {
+                        var chartAttribute = chart.Attributes().ToArray();
+                        var tmp = new Graph();
+                        tmp.width = chartAttribute.First(p => p.Name == "width").Value.ToString();
+                        tmp.Height = chartAttribute.First(p => p.Name == "height").Value.ToString();
+                        tmp.Title= chartAttribute.First(p => p.Name == "title").Value.ToString();
+                        tmp.Xfield = chartAttribute.First(p => p.Name == "xfield").Value.ToString();
+                        tmp.FieldType = chartAttribute.First(p => p.Name == "type").Value.ToString();
+                        tmp.ApplyFunction = chartAttribute.FirstOrDefault(p => p.Name == "applyFunction") != null ? chartAttribute.First(p => p.Name == "applyFunction").Value.ToString() : string.Empty;
+                        report.GraphList.Add(tmp);
+                    }
+                }
+
+
+
             }
             catch(Exception ex)
             {

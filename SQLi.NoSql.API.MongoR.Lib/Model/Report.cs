@@ -40,10 +40,29 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
 
         public bool DisplayGraphs { get; set; } 
 
+        public List<Graph> GraphList { get; set; }
+
     
 
       
     }
+
+    public class Graph
+    {
+        public string width { get; set; }
+
+        public string Height { get; set; }
+
+        public string Title { get; set; }
+
+        public string Xfield { get; set; }
+
+        public string FieldType { get; set; }
+
+        public string ApplyFunction { get; set; }
+    }
+
+
 
     public class Filter
     {
