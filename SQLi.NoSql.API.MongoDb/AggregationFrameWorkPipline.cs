@@ -110,5 +110,55 @@ namespace SQLi.NoSql.API.MongoDB
 
         }
 
+        public List<BsonDocument> ExecuteChartQuery(List<string> queryList,string Xfiled)
+        {
+          
+
+            var query = new List<BsonDocument>();
+
+            foreach (var document in queryList)
+            {
+                var documentBson = BsonDocument.Parse(document);
+                query.Add(documentBson);
+            }
+
+            var tmpQuery = new List<BsonDocument>();
+            foreach (var step in query)
+            {
+                if (step.ElementAt(0).Name != "$project" && step.ElementAt(0).Name != "$sort")
+                {
+                    tmpQuery.Add(step);
+                }
+            }
+
+            var group = new BsonDocument
+                {
+                    { "$group",
+                        new BsonDocument
+                            {
+                                { "_id", "$"+Xfiled
+                                },
+                                {
+                                    "Count", new BsonDocument
+                                                 {
+                                                     {
+                                                         "$sum", 1
+                                                     }
+                                                 }
+                                }
+                            }
+                  }
+                };
+
+            tmpQuery.Add(group);
+
+            var resultTmpQuery = _collection.Aggregate<BsonDocument>(tmpQuery.ToList()).ToList();
+
+            // return toalQuery;
+           return resultTmpQuery;
+
+        }
+
+       
     }
 }

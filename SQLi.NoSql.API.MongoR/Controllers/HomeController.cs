@@ -89,8 +89,7 @@ namespace SQLi.NoSql.API.MongoR.Controllers
 
             // instantiate the GridView control from System.Web.UI.WebControls namespace
             // set the data source
-            GridView gridview = new GridView();
-            gridview.DataSource = model.CurrentReport.Grid.ExcelResultSet;
+            GridView gridview = new GridView {DataSource = model.CurrentReport.Grid.ExcelResultSet};
             gridview.DataBind();
 
             // Clear all the content from the current response
@@ -118,14 +117,15 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         }
 
 
-        public ActionResult DrawChart()
+        public ActionResult DrawChart(Graph chart)
         {
             var model = new ReportConfigurationModel();
             ConfigurationModel.LoadReportConfiguration();
             model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
-            AggregationQueryProcessing.BuildGraphicalCharts(model.CurrentReport);
 
-            return View("dynamicCharts", model);
+            chart = AggregationQueryProcessing.BuildGraphicalCharts(model.CurrentReport,chart);
+
+             return View("dynamicCharts", chart);
         }
     }
 }

@@ -49,9 +49,9 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
 
     public class Graph
     {
-        public string width { get; set; }
+        public int width { get; set; }
 
-        public string Height { get; set; }
+        public int Height { get; set; }
 
         public string Title { get; set; }
 
@@ -60,6 +60,12 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
         public string FieldType { get; set; }
 
         public string ApplyFunction { get; set; }
+
+        public List<string> XfiledList { get; set; }
+
+        public List<int> Xvalue { get; set; }
+
+        public string Name { get; set; }
     }
 
 

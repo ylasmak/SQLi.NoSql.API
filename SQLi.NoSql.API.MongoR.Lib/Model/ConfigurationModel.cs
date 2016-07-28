@@ -163,11 +163,12 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                     {
                         var chartAttribute = chart.Attributes().ToArray();
                         var tmp = new Graph();
-                        tmp.width = chartAttribute.First(p => p.Name == "width").Value.ToString();
-                        tmp.Height = chartAttribute.First(p => p.Name == "height").Value.ToString();
+                        tmp.width = int.Parse( chartAttribute.First(p => p.Name == "width").Value.ToString());
+                        tmp.Height = int.Parse( chartAttribute.First(p => p.Name == "height").Value.ToString());
                         tmp.Title= chartAttribute.First(p => p.Name == "title").Value.ToString();
                         tmp.Xfield = chartAttribute.First(p => p.Name == "xfield").Value.ToString();
                         tmp.FieldType = chartAttribute.First(p => p.Name == "type").Value.ToString();
+                        tmp.Name = chartAttribute.First(p => p.Name == "name").Value.ToString();
                         tmp.ApplyFunction = chartAttribute.FirstOrDefault(p => p.Name == "applyFunction") != null ? chartAttribute.First(p => p.Name == "applyFunction").Value.ToString() : string.Empty;
                         report.GraphList.Add(tmp);
                     }
