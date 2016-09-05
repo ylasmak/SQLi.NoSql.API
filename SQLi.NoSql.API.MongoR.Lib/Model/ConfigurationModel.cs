@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SQLi.NoSql.API.Core.AppiLogger;
+using System.Configuration;
 
 namespace SQLi.NoSql.API.MongoR.Lib.Model
 {
@@ -14,33 +15,46 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
     {
 
         private static Dictionary<string, Report> _configDictionnary;
-        private static string configurationFolder = @"E:\RMongo";
+        private static string configurationFolder
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["ConsfigFolderSource"];
 
-        public static void LoadReportConfiguration()
+            }
+        }
+           
+
+        public static void LoadReportConfiguration(string  path)
         {
             if (_configDictionnary == null)
             {
                 _configDictionnary = new Dictionary<string, Report>();
 
             }
-            else
+            //else
+            //{
+            //    return;
+            //}
+
+            if (string.IsNullOrEmpty(path))
             {
-                return;
-            }
+                var files = Directory.GetFiles(configurationFolder);
 
-           var files = Directory.GetFiles(configurationFolder);
-
-            if(files != null && files.Length > 0)
-            {
-
-                foreach(var file in files)
+                if (files != null && files.Length > 0)
                 {
 
-                  
-                    ProccessFileConfiguration(file);
+                    foreach (var file in files)
+                    {
+                        ProccessFileConfiguration(file);
+                    }
                 }
             }
-
+            else
+            {
+                      ProccessFileConfiguration(path);
+            }
+            
 
         }
 
@@ -55,6 +69,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                 //Load Report attribute
                 var node = reportNode.Attributes().ToList();
                 report.ReportName = node.First(p => p.Name.ToString() == "name").Value.ToString();
+                report.ReporTheme = node.First(p => p.Name.ToString() == "theme").Value.ToString();
                 report.CollectionName = node.First(p => p.Name.ToString() == "collection").Value.ToString();
                 report.ServerPort =  node.First(p => p.Name.ToString() == "port").Value.ToString();
                 report.ServerUri = node.First(p => p.Name.ToString() == "server").Value.ToString();
@@ -145,10 +160,15 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                         report.FilterDataValue.Add(filter.Name, null);
                     }
                 }
-                
-                   
-                _configDictionnary.Add(report.ReportName, report);
-
+                 Report rport = null;
+                if (!_configDictionnary.TryGetValue(report.ReportName, out rport))
+                {
+                     _configDictionnary.Add(report.ReportName, report);
+                }
+                else
+                {
+                     _configDictionnary[report.ReportName] = report;
+                }
 
                 // Process Graph
 
@@ -163,12 +183,11 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                     {
                         var chartAttribute = chart.Attributes().ToArray();
                         var tmp = new Graph();
-                        tmp.width = int.Parse( chartAttribute.First(p => p.Name == "width").Value.ToString());
-                        tmp.Height = int.Parse( chartAttribute.First(p => p.Name == "height").Value.ToString());
+                        tmp.width = chartAttribute.First(p => p.Name == "width").Value.ToString();
+                        tmp.Height = chartAttribute.First(p => p.Name == "height").Value.ToString();
                         tmp.Title= chartAttribute.First(p => p.Name == "title").Value.ToString();
                         tmp.Xfield = chartAttribute.First(p => p.Name == "xfield").Value.ToString();
                         tmp.FieldType = chartAttribute.First(p => p.Name == "type").Value.ToString();
-                        tmp.Name = chartAttribute.First(p => p.Name == "name").Value.ToString();
                         tmp.ApplyFunction = chartAttribute.FirstOrDefault(p => p.Name == "applyFunction") != null ? chartAttribute.First(p => p.Name == "applyFunction").Value.ToString() : string.Empty;
                         report.GraphList.Add(tmp);
                     }
@@ -189,6 +208,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
         {
             return GetReportConfiguration(reportName, false);
         }
+
         public static Report GetReportConfiguration(string reportName,bool initializedQuery)
         {
             var tmp = _configDictionnary[reportName];

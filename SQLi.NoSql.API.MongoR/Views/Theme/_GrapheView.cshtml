@@ -1,13 +1,11 @@
-﻿@model SQLi.NoSql.API.MongoR.Models.ReportConfigurationModel
-
+﻿@model SQLi.NoSql.API.MongoR.Models.ReportModelTheme
 @{
     // TODO: use the data from the model to draw a chart
 
-    var myChart = new Chart(width: 600, height: 400)
+    var myChart = new Chart(width: 100, height: 400)
         .AddSeries(
             name: "Employee",
             xValue: new[] { "Peter", "Andrew", "Julie", "Mary", "Dave" },
             yValues: new[] { "2", "6", "4", "5", "3" })
         .Write();
 }
-

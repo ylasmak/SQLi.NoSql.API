@@ -23,9 +23,29 @@ namespace SQLi.NoSql.API.MongoR
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            //bundles.Add(new ScriptBundle("~/bundles/js/template").Include(
+            //           "~/Content/admin/*js",
+            //           "~/Content/global/*js"));
+            //bundles.Add(new ScriptBundle("~/bundles/css/template").Include(
+            //         "~/Content/admin/*css",
+            //           "~/Content/global/*css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/autre").Include("~/Scripts/fastclick.js",
+                                                                    "~/Scripts/nprogress.js",
+                                                                    "~/Scripts/raphael.js",
+                                                                    "~/Scripts/morris.js",
+                                                                    "~/Scripts/custom.js"
+                                                                    ));
+
+            bundles.Add(new ScriptBundle("~/bundles/chart").Include("~/Scripts/Chart.min.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                         "~/Content/bootstrap.css",
+                         //"~/Content/site.css",
+                         "~/Content/font-awesome.min.css",
+                         "~/Content/nprogress.css",
+                         "~/Content/green.css",
+                         "~/Content/custom.css"));
         }
     }
 }

@@ -204,21 +204,19 @@ namespace SQLi.NoSql.API.MongoR.Lib
             return report;
         }
 
-        public static Graph BuildGraphicalCharts(Report report, Graph chart)
+        public static Report BuildGraphicalCharts(Report report)
         {
             var aggregationFrameWork = new AggregationFrameWorkPipline(report.ServerUri,
                                                                            report.ServerPort,
                                                                            report.DataBase,
                                                                            report.CollectionName);
 
-           
-              var  result=  aggregationFrameWork.ExecuteChartQuery(report.Query, chart.Xfield);
+            var result = aggregationFrameWork.Execute(report.Query, -1, -1, -1);
 
-            chart.XfiledList = result.Select(p => p["_id"].ToString()).ToList();
-            chart.Xvalue = result.Select(p => p["Count"].ToInt32()).ToList();
-          
+            BuildExcelResult(report, result.Item1);
+            BuildChartsData(report);
 
-            return chart;
+            return report;
         }
 
         public static Report ExcelExport(Report report)
@@ -236,10 +234,13 @@ namespace SQLi.NoSql.API.MongoR.Lib
             return report;
         }
 
-        private static void BuildChartsData(Graph report)
+        private static void BuildChartsData(Report report)
         {
            
-          
+            
+
+            //report.Grid.ExcelResultSet = resultGrid;
+
         }
 
         private static void BuildExcelResult(Report report, List<BsonDocument> resultSet)

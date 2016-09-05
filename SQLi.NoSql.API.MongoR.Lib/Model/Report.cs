@@ -10,6 +10,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
     public class Report
     {
         public string ReportName { get; set; }
+        public string ReporTheme { get; set; }
 
         public string ExcelExportFileName { get; set; }
 
@@ -42,6 +43,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
 
         public List<Graph> GraphList { get; set; }
 
+        public string path { get; set; }
     
 
       
@@ -49,9 +51,9 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
 
     public class Graph
     {
-        public int width { get; set; }
+        public string width { get; set; }
 
-        public int Height { get; set; }
+        public string Height { get; set; }
 
         public string Title { get; set; }
 
@@ -60,12 +62,6 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
         public string FieldType { get; set; }
 
         public string ApplyFunction { get; set; }
-
-        public List<string> XfiledList { get; set; }
-
-        public List<int> Xvalue { get; set; }
-
-        public string Name { get; set; }
     }
 
 
@@ -126,6 +122,17 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
         Gt
     }
 
+    public enum TypeFolderQuery
+    {
+        query,
+        folder
+    }
 
-
+    public class FolderQuery
+    {
+        public string  Name{ get; set; }
+        public TypeFolderQuery Type { get; set; }
+        public string Query { get; set; }
+        public FolderQuery ParentFolder { get; set; }
+    }
 }

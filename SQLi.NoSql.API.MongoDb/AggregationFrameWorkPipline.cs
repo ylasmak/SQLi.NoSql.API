@@ -5,6 +5,8 @@ using MongoDB.Driver;
 
 using MongoDB.Bson;
 using SQLi.NoSql.API.Collection.MongoR;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace SQLi.NoSql.API.MongoDB
 {
@@ -18,6 +20,35 @@ namespace SQLi.NoSql.API.MongoDB
             var database = client.GetDatabase(dataBase);
              _collection = database.GetCollection<BsonDocument>(collection);
         }
+
+        private static bool IsValidJson(string strInput)
+        {
+            strInput = strInput.Trim();
+            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
+                (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
+            {
+                try
+                {
+                    var obj = JToken.Parse(strInput);
+                    return true;
+                }
+                catch (JsonReaderException jex)
+                {
+                    //Exception in parsing json
+                    Console.WriteLine(jex.Message);
+                    return false;
+                }
+                catch (Exception ex) //some other exception
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
         public Tuple<List<BsonDocument>, int> Execute(List<string> jsonDocument,
                                           int maxInPageCount, int pageNumber,
                                          int resultCount)
@@ -27,9 +58,10 @@ namespace SQLi.NoSql.API.MongoDB
 
             foreach (var document in jsonDocument)
             {
+                if (IsValidJson(document)) { 
                 var documentBson = BsonDocument.Parse(document);
                 list.Add(documentBson);
-            }
+            } }
 
             if (pageNumber == 0 && pageNumber != -1)
             {
@@ -110,55 +142,5 @@ namespace SQLi.NoSql.API.MongoDB
 
         }
 
-        public List<BsonDocument> ExecuteChartQuery(List<string> queryList,string Xfiled)
-        {
-          
-
-            var query = new List<BsonDocument>();
-
-            foreach (var document in queryList)
-            {
-                var documentBson = BsonDocument.Parse(document);
-                query.Add(documentBson);
-            }
-
-            var tmpQuery = new List<BsonDocument>();
-            foreach (var step in query)
-            {
-                if (step.ElementAt(0).Name != "$project" && step.ElementAt(0).Name != "$sort")
-                {
-                    tmpQuery.Add(step);
-                }
-            }
-
-            var group = new BsonDocument
-                {
-                    { "$group",
-                        new BsonDocument
-                            {
-                                { "_id", "$"+Xfiled
-                                },
-                                {
-                                    "Count", new BsonDocument
-                                                 {
-                                                     {
-                                                         "$sum", 1
-                                                     }
-                                                 }
-                                }
-                            }
-                  }
-                };
-
-            tmpQuery.Add(group);
-
-            var resultTmpQuery = _collection.Aggregate<BsonDocument>(tmpQuery.ToList()).ToList();
-
-            // return toalQuery;
-           return resultTmpQuery;
-
-        }
-
-       
     }
 }

@@ -8,7 +8,7 @@
     ViewBag.Title = "ReportDetails";
 }
 
-<div class="row">
+<div class="form-horizontal">
 
 @using (Html.BeginForm("Filter", "Home"))
 {
@@ -17,7 +17,7 @@
         <h4>FilterConfig</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="col-md-4">
+        <div class="form-group">
 
             @if (Model.CurrentReport != null && Model.CurrentReport.FilterList != null)
             {
@@ -113,79 +113,88 @@
 
       }
 
-      <div class="col-md-4">
+      <div>
           @grid.GetHtml(
                 tableStyle: "table",
                 alternatingRowStyle: "alternate",
                 headerStyle: "header",
                 selectedRowStyle: "select",
                 mode: WebGridPagerModes.All,
+                firstText: "<< First",
+                previousText: "< Prev",
+                nextText: "Next >",
+                lastText: "Last >>",
                 columns: grid.Columns(
                   headers.ToArray()
                 )
         )
+      </div>
 
           <div>@Html.ActionLink("Export Excel", "ExcelExport");</div>
 
-          <table>
-              <tr>
-                  <td> Total ligne : </td>
-                  <td> @Html.Label(Model.CurrentReport.ResultCount.ToString())</td>
-                  <td>  page :</td>
-                  <td> @Html.Label((Model.CurrentReport.CurrentPage + 1).ToString()) </td>
-                  <td>  Total Page :</td>
-                  <td> @Html.Label(Model.CurrentReport.PageCount.ToString()) </td>
-              </tr>
+           <table>
+               <tr>
+                   <td> Total ligne : </td>
+                   <td> @Html.Label(Model.CurrentReport.ResultCount.ToString())</td>
+                   <td>  page :</td>
+                   <td> @Html.Label((Model.CurrentReport.CurrentPage +1).ToString()) </td>
+                   <td>  Total Page :</td>
+                   <td> @Html.Label(Model.CurrentReport.PageCount.ToString()) </td>
+               </tr>
 
-          </table>
+           </table>
 
-          using (Html.BeginForm("Pagination", "Home"))
-          {
-          @Html.AntiForgeryToken()
-          <table>
-              <tr>
-                  <td>
-                      <div class="col-md-offset-2 col-md-10">
-                          @Html.Label("Page : ")
+            using (Html.BeginForm("Pagination", "Home"))
+            {
+                @Html.AntiForgeryToken()
+               <table>
+                   <tr>
+                       <td>
+                           <div class="col-md-offset-2 col-md-10">
+                               @Html.Label("Page : ")
+                              
+                            </div>
+                       </td>
+                       <td>
+                           <div class="col-md-offset-2 col-md-10">
+                               @Html.TextBox("pageNumbre", (Model.CurrentReport.CurrentPage + 1));
+                           </div>
+                       </td>
 
-                      </div>
-                  </td>
-                  <td>
-                      <div class="col-md-offset-2 col-md-10">
-                          @Html.TextBox("pageNumbre", (Model.CurrentReport.CurrentPage + 1));
-                      </div>
-                  </td>
+                       <td>
+                           <div class="col-md-offset-2 col-md-10">
+                               <input type="submit" value="OK" class="btn btn-default" />
+                           </div>
+                       </td>
+                      
+                   </tr>
+               </table>
+      }
 
-                  <td>
-                      <div class="col-md-offset-2 col-md-10">
-                          <input type="submit" value="OK" class="btn btn-default" />
-                      </div>
-                  </td>
+        <div>@Html.ActionLink("Display Graphs", "DisplayGraphs");</div>
+        <div>
+        <img src="@Url.Action("DrawChart")" />
 
-              </tr>
-          </table>
-          }
-      </div>
+            @*<img  resource="@{
+            var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Green)
+                .AddTitle("Chart Title")
+                .AddSeries(
+                    name: "ChartTitle",
+                    xValue: new[] { "Col1", "Col2", "Col3", "Col4", "Col5" },
+                    yValues: new[] { "2", "6", "4", "5", "3" })
+                .Write();
+        }"/>*@
 
         
+           
+        </div>
 
-       
-        <div  class="col-md-4">
-          
-          @foreach (var chart in Model.CurrentReport.GraphList)
-          {
-            <div>
-                <img src="@Url.Action("DrawChart",chart)" />
-            </div>
-          }
-          </div>
+      if(Model.CurrentReport.DisplayGraphs)
+      {
+     
+      }
 
-              if (Model.CurrentReport.DisplayGraphs)
-              {
-
-              }
-
-          }
+  }
        
     </div>
 
