@@ -14,49 +14,21 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         public ActionResult Index(string path)
         {
 
-            string filename = string.Empty;
-            if (string.IsNullOrEmpty(path))
-            {
 
-                 filename = ConfigurationManager.AppSettings["ConsfigFolderSource"];
-            }
-            else {
-                filename = path;
-            }
-            string[] array0 = Directory.GetDirectories(filename);
-            string[] array1 = Directory.GetFiles(filename);
-            ViewBag.Directories = array0;
-            ViewBag.Files = array1;
+            var result = ConfigurationModel.GetCurrentConfiguration(path);
+            ViewBag.Directories = result.Item2;
+            ViewBag.Files = result.Item1;
             return View();
         }
-
-         
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            ConfigurationModel.LoadReportConfiguration(null);
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-            var result = AggregationQueryProcessing.BuildAggregationPiplineFrameWorkQuery(ConfigurationModel.GetReportConfiguration("TransactionDetails"));
-
-            return View();
-        }
-
-        public ActionResult ReportDetails()
-
+        
+        public ActionResult ReportDetails(string path)
         {
 
             ViewBag.Message = "Your contact page.";
-            ConfigurationModel.LoadReportConfiguration(null);
+          
             
             var model = new ReportConfigurationModel();
-            model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
+            model.CurrentReport = ConfigurationModel.GetReportConfiguration(path, true);
 
             return View(model);
         }
@@ -64,8 +36,10 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         public ActionResult Filter(FormCollection form)
         {
             var model = new ReportConfigurationModel();
-            ConfigurationModel.LoadReportConfiguration(null);
-            model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails");
+
+            var path = form["path"].Replace(",","");
+
+            model.CurrentReport = ConfigurationModel.GetReportConfiguration(path);
 
             model.CurrentReport.CurrentPage = 0;
             model.CurrentReport.PageCount = 0;
@@ -79,13 +53,13 @@ namespace SQLi.NoSql.API.MongoR.Controllers
             }
 
             AggregationQueryProcessing.BuildAggregationPiplineFrameWorkQuery(model.CurrentReport);
-            return RedirectToAction("ReportDetails");
+            return RedirectToAction("ListReport", new { path= path });
         }
 
         public ActionResult Pagination(string pageNumbre)
         {
             var model = new ReportConfigurationModel();
-            ConfigurationModel.LoadReportConfiguration(null);
+          
             model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
             model.CurrentReport.CurrentPage = int.Parse( pageNumbre) - 1;
 
@@ -97,7 +71,7 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         public ActionResult ExcelExport(string file)
         {
             var model = new ReportConfigurationModel();
-            ConfigurationModel.LoadReportConfiguration(file);
+          
             model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
 
             AggregationQueryProcessing.ExcelExport(model.CurrentReport);
@@ -134,10 +108,10 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         }
 
 
-        public ActionResult DrawChart()
+        public ActionResult DrawChart(string path)
         {
             var model = new ReportConfigurationModel();
-            ConfigurationModel.LoadReportConfiguration(null);
+          
             model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
             AggregationQueryProcessing.BuildGraphicalCharts(model.CurrentReport);
 
@@ -148,94 +122,19 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         public ActionResult ListReport(string path)
         {
 
-            var form = Request.Form;
-            if (form != null && form.AllKeys != null && form["path"] !=null ) {
-                path = form["path"].ToString();
-            }
-            if (string.IsNullOrEmpty(path))
+          
+
+            if (!string.IsNullOrEmpty(path))
             {
-                path=GlobalVariables.path;
-            }
-                if (!string.IsNullOrEmpty(path))
-            {
-                    GlobalVariables.path = path;
-                    var themeFolder = "~/Views/Theme/";
-                    var model = new ReportModelTheme();
-                    ConfigurationModel.LoadReportConfiguration(path);
-               
+                   
+                var themeFolder = "~/Views/Theme/";
+                var model = new ReportModelTheme();                               
 
-                    var config = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
-                    model.ReporResultFiltre = config;
-                    model.ReportChart = config;
-                    model.ReportForm = config;
-                    model.ReporLog = config;
+                var config = ConfigurationModel.GetReportConfiguration(path, true);
+                model.CurrentReport = config;
+                model.Path = path;
 
-                /*  result report */
 
-                int pageNum = 1;
-
-                    if (Request != null && Request.QueryString != null && Request.QueryString["page"] != null && int.TryParse(Request.QueryString["page"], out pageNum))
-                    {
-                        int.TryParse(Request.QueryString["page"], out pageNum);
-                    }
-
-                    if (Request != null && Request.Form != null && Request.Form["pageNumbre"] != null && int.TryParse(Request.Form["pageNumbre"], out pageNum))
-                    {
-                        int.TryParse(Request.Form["pageNumbre"], out pageNum);
-                        pageNum = pageNum - 1;
-                        model.ReporResultFiltre= GlobalVariables.CurrentFilter ;
-                    model.ReportForm = GlobalVariables.CurrentForm;
-                }
-                
-                    model.ReporResultFiltre.CurrentPage = pageNum;
-                    //model.ReporResultFiltre.PageCount = 0;
-                    //model.ReporResultFiltre.ResultCount = 0;
-                    model.ReporResultFiltre.Grid.ResultSet = null;
-                    model.ReporResultFiltre.Grid.ExcelResultSet = null;
-                    model.ReporResultFiltre.path = path;
-
-                if (form != null && form.AllKeys != null && form["path"] != null)
-                {
-                    foreach (var filter in form.AllKeys)
-                    {
-                        model.ReporResultFiltre.FilterDataValue[filter] = form[filter];
-                    }
-
-                   //
-                }
-                bool hasFilterValue = false;
-                if(model.ReporResultFiltre !=null 
-                    && model.ReporResultFiltre.FilterDataValue !=null 
-                    && model.ReporResultFiltre.FilterDataValue.Count > 0)
-                { 
-                    foreach (var filter in model.ReporResultFiltre.FilterDataValue)
-                    {
-                        if(filter.Value !=null)
-                        {
-                            hasFilterValue = true;
-                        }
-                    }
-                }
-
-                /* end result */
-                if (hasFilterValue)
-                {
-                    AggregationQueryProcessing.BuildAggregationPiplineFrameWorkQuery(model.ReporResultFiltre);
-                }
-                /* start chart  */
-
-                AggregationQueryProcessing.BuildGraphicalCharts(model.ReportChart);
-
-                /* End chart  */
-
-                /* start form   */
-
-                // model.ReportForm = new Report();
-
-                /* end  form  */
-                GlobalVariables.CurrentFilter = model.ReporResultFiltre;
-                GlobalVariables.CurrentForm= model.ReportForm ;
-                model.ReportForm.path = path;
                 return View(themeFolder + config.ReporTheme + ".cshtml", model);
                
             }

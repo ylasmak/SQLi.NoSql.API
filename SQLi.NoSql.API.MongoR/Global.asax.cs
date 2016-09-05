@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLi.NoSql.API.MongoR.Lib.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,6 +17,7 @@ namespace SQLi.NoSql.API.MongoR
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ConfigurationModel.LoadReportConfiguration();
         }
     }
 }

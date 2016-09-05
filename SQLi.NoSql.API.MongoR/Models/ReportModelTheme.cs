@@ -9,10 +9,10 @@ namespace SQLi.NoSql.API.MongoR.Models
     public class ReportModelTheme
     {
         public string currentConfig { get; set; }
-        public Report ReportForm { get; set; }
-        public Report ReportChart { get; set; }
-        public Report ReporLog { get; set; }
-        public Report ReporResultFiltre { get; set; }
+        public Report CurrentReport { get; set; }
+
+        public string Path { get; set; }
+     
     }
 
     public class constReport

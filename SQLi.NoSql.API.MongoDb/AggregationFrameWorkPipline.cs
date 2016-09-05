@@ -58,10 +58,10 @@ namespace SQLi.NoSql.API.MongoDB
 
             foreach (var document in jsonDocument)
             {
-                if (IsValidJson(document)) { 
+              
                 var documentBson = BsonDocument.Parse(document);
                 list.Add(documentBson);
-            } }
+            } 
 
             if (pageNumber == 0 && pageNumber != -1)
             {

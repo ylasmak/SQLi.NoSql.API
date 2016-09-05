@@ -15,6 +15,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
     {
 
         private static Dictionary<string, Report> _configDictionnary;
+        private static Nodes _nodeTree;
         private static string configurationFolder
         {
             get
@@ -23,47 +24,80 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
 
             }
         }
-           
 
-        public static void LoadReportConfiguration(string  path)
+        private static  Nodes NodeTree
+        {
+            get
+            {
+                return _nodeTree;
+            }
+             set
+            {
+                _nodeTree = value;
+            }
+        }
+           
+        public static Tuple<string[],string[]> GetCurrentConfiguration(string node = null)
+        {
+
+            if(string.IsNullOrEmpty(node))
+            {
+                var files = NodeTree.Report.ToArray();
+                var directories = NodeTree.Folder.Select(p => p.NodeName).ToArray();
+
+                return new Tuple<string[], string[]>(files, directories);
+            }
+            return null;
+        }
+
+        public static void LoadReportConfiguration(string path = null,Nodes node = null)
         {
             if (_configDictionnary == null)
             {
                 _configDictionnary = new Dictionary<string, Report>();
+            }
+
+          
+            if(string.IsNullOrEmpty(path))
+            {
+                path = configurationFolder;
+                NodeTree = new Nodes()
+                {
+                    NodeName = "Root"
+                };
+                node = NodeTree;
 
             }
-            //else
-            //{
-            //    return;
-            //}
+          
+           
+            var files = Directory.GetFiles(path);
 
-            if (string.IsNullOrEmpty(path))
+            if (files != null && files.Length > 0)
             {
-                var files = Directory.GetFiles(configurationFolder);
-
-                if (files != null && files.Length > 0)
+                foreach (var file in files)
                 {
-
-                    foreach (var file in files)
-                    {
-                        ProccessFileConfiguration(file);
-                    }
+                    ProccessFileConfiguration(file, node);
                 }
             }
-            else
+
+            var folders = Directory.GetDirectories(path);
+
+            foreach (var folder in folders)
             {
-                      ProccessFileConfiguration(path);
+                var foderName = Path.GetFileName(folder);
+                var tmp = new Nodes() { NodeName = string.Format("{0}/{1}", node.NodeName, foderName) };               
+                LoadReportConfiguration(folder, tmp);
+                node.Folder.Add(tmp);
             }
-            
 
         }
 
-        private static void ProccessFileConfiguration(string config)
+        private static void ProccessFileConfiguration(string config,Nodes myNode)
         {
            try
             {
                 var report = new Report();
-               var xConfig  =  XDocument.Load(config);
+                var xConfig  =  XDocument.Load(config);
 
                 var reportNode = xConfig.Descendants("report");
                 //Load Report attribute
@@ -160,15 +194,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                         report.FilterDataValue.Add(filter.Name, null);
                     }
                 }
-                 Report rport = null;
-                if (!_configDictionnary.TryGetValue(report.ReportName, out rport))
-                {
-                     _configDictionnary.Add(report.ReportName, report);
-                }
-                else
-                {
-                     _configDictionnary[report.ReportName] = report;
-                }
+               
 
                 // Process Graph
 
@@ -192,6 +218,14 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
                         report.GraphList.Add(tmp);
                     }
                 }
+
+
+                report.ReportName = string.Format("{0}/{1}", myNode.NodeName, report.ReportName);
+
+                myNode.Report.Add(report.ReportName);
+               _configDictionnary.Add(report.ReportName, report);
+
+               
 
 
 

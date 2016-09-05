@@ -47,17 +47,17 @@
                 <div class="x_content">
                     <div class="row sortableUI">
                      <div class="col-md-4 col-sm-4 col-xs-6">
-                         @Html.Partial("~/Views/Theme/_FormView.cshtml", Model.ReportForm)
+                         @Html.Partial("~/Views/Theme/_FormView.cshtml", Model.CurrentReport)
                      </div>
                         <div class="col-md-4 col-sm-4 col-xs-6">
-                            @Html.Partial("~/Views/Theme/_GrapheView.cshtml", Model.ReportChart)
+                            @Html.Partial("~/Views/Theme/_GrapheView.cshtml", Model.CurrentReport)
                         </div>
                         <div class="col-md-4 col-sm-4 col-xs-6">
-                            @Html.Partial("~/Views/Theme/_ResultTableView.cshtml", Model.ReporResultFiltre)
+                            @Html.Partial("~/Views/Theme/_ResultTableView.cshtml", Model.CurrentReport)
                         </div>
                   
                         <div class="col-md-12 col-sm-12 col-xs-12">
-                            @Html.Partial("~/Views/Theme/_LogView.cshtml",Model.ReporLog)
+                            @Html.Partial("~/Views/Theme/_LogView.cshtml",Model.CurrentReport)
                         </div>
                         </div>
                     </div>

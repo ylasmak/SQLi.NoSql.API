@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="AggregationQueryProcessing.cs" />
     <Compile Include="Model\ConfigurationModel.cs" />
+    <Compile Include="Model\Nodes.cs" />
     <Compile Include="Model\Report.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

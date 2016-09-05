@@ -25,19 +25,20 @@
         </div>
         <div class="x_content">
             <br>
-            @using (Html.BeginForm("ListReport", "Home"))
+            @using (Html.BeginForm("Filter", "Home"))
             {
                 @Html.AntiForgeryToken()
 
-               
+               @Html.Hidden("path", Model.Path)
+
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group">
-                    @if (Model.ReportForm != null && Model.ReportForm.FilterList != null)
+                    @if (Model.CurrentReport != null && Model.CurrentReport.FilterList != null)
                     {
-                        foreach (var filter in Model.ReportForm.FilterList)
+                        foreach (var filter in Model.CurrentReport.FilterList)
                         {
 
-                            var value = Model.ReportForm.FilterDataValue[filter.Name];
+                            var value = Model.CurrentReport.FilterDataValue[filter.Name];
 
                             if (filter.Type == "Text")
                             {
@@ -78,7 +79,7 @@
 
                                 }
 
-                                <input value="@Model.ReportForm.path" name="path" class="hidden"/>
+                                <input value="@Model.CurrentReport.path" name="path" class="hidden"/>
 
                                 <div class="form-group">
                                     @Html.Label(filter.DisplayName)
