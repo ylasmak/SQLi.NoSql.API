@@ -1,0 +1,126 @@
+﻿@model SQLi.NoSql.API.MongoR.Models.ReportModelTheme
+ <div class="x_panel">
+        <div class="x_title">
+            <h2>Configuration Filter <small>different form elements</small></h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li>
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="#">Settings 1</a>
+                        </li>
+                        <li>
+                            <a href="#">Settings 2</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <br>
+            @using (Html.BeginForm("ListReport", "Home"))
+            {
+                @Html.AntiForgeryToken()
+
+               
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @if (Model.ReportForm != null && Model.ReportForm.FilterList != null)
+                    {
+                        foreach (var filter in Model.ReportForm.FilterList)
+                        {
+
+                            var value = Model.ReportForm.FilterDataValue[filter.Name];
+
+                            if (filter.Type == "Text")
+                            {
+                                <div class="form-group">
+                                    @Html.Label(filter.DisplayName)
+                                    @Html.TextBox(filter.Name, value, new { @class = "form-control" })
+                                 </div>
+                            }
+
+                            if (filter.Type == "Date")
+                            {
+                                <div class="form-group">
+                                    @Html.Label(filter.DisplayName)
+                                    @Html.TextBox(filter.Name, value, new { @class = "form-control" })
+                                </div>
+                            }
+
+                            if (filter.Type == "List")
+                            {
+                                var source = new List<SelectListItem>
+                                    ();
+                                var tmps = filter.Source.Split(',');
+
+                                foreach (var tmp in tmps)
+                                {
+                                    var item = new SelectListItem()
+                                    {
+                                        Text = tmp,
+                                        Value = tmp
+
+                                    };
+                                    if (value != null && value.ToString() == tmp)
+                                    {
+                                        item.Selected = true;
+                                    }
+
+                                    source.Add(item);
+
+                                }
+
+                                <input value="@Model.ReportForm.path" name="path" class="hidden"/>
+
+                                <div class="form-group">
+                                    @Html.Label(filter.DisplayName)
+                                    @Html.DropDownList(filter.Name, source, new { @class = "form-control" })
+                                </div>
+                            }
+
+
+                        }
+                    }
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input type="submit" value="Filtrer" class="btn btn-primary" />
+                                    </div>
+                                </div>
+
+
+            }
+
+            @*<form id="demo-form" data-parsley-validate="" novalidate="">
+                <label for="fullname">Full Name * :</label>
+                <input type="text" id="fullname" class="form-control" name="fullname" required="">
+
+                <label for="email">Email * :</label>
+                <input type="email" id="email" class="form-control" name="email" data-parsley-trigger="change" required="">
+
+             
+
+                    <label for="heard">Heard us by *:</label>
+                    <select id="heard" class="form-control" required="">
+                        <option value="">Choose..</option>
+                        <option value="press">Press</option>
+                        <option value="net">Internet</option>
+                        <option value="mouth">Word of mouth</option>
+                    </select>
+
+                    <label for="message">Message (20 chars min, 100 max) :</label>
+                    <textarea id="message" required="required" class="form-control" name="message" data-parsley-trigger="keyup" data-parsley-minlength="20" data-parsley-maxlength="100" data-parsley-minlength-message="Come on! You need to enter at least a 20 caracters long comment.." data-parsley-validation-threshold="10"></textarea>
+
+                    <br>
+                    <span class="btn btn-primary">Validate form</span>
+
+              
+            </form>*@
+        </div>
+    </div>

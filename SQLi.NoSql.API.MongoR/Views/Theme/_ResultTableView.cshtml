@@ -1,0 +1,115 @@
+﻿
+@model SQLi.NoSql.API.MongoR.Models.ReportModelTheme
+@using System.Data
+@using System.Linq;
+@using System.Dynamic;
+
+@{
+    ViewBag.Title = "ReportDetails";
+}
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2>Transaction Result   <small>Exemple Teste </small></h2>
+        <ul class="nav navbar-right panel_toolbox">
+            <li>
+                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <a href="#">Settings 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Settings 2</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a class="close-link"><i class="fa fa-close"></i></a>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content">
+    @if (Model.ReporResultFiltre != null && Model.ReporResultFiltre.Grid.ResultSet != null &&
+                                                           Model.ReporResultFiltre.Grid.ResultSet.Tables.Count > 0)
+    {
+        //Dipalying table header
+        var cpt = Model.ReporResultFiltre.CurrentPage * Model.ReporResultFiltre.Grid.MaxInPage;
+
+        var headers = new List<WebGridColumn>();
+
+
+        var result = new List<dynamic>();
+
+        foreach (DataRow row in Model.ReporResultFiltre.Grid.ResultSet.Tables[0].Rows)
+        {
+            var obj = (IDictionary<string, object>)new ExpandoObject();
+            foreach (DataColumn col in Model.ReporResultFiltre.Grid.ResultSet.Tables[0].Columns)
+            {
+                obj.Add(col.ColumnName, row[col.ColumnName]);
+            }
+            result.Add(obj);
+        }
+
+        var grid = new WebGrid(rowsPerPage: Model.ReporResultFiltre.Grid.MaxInPage, canPage: true);
+
+        grid.Bind(result, autoSortAndPage: false, rowCount: Model.ReporResultFiltre.ResultCount);
+
+        foreach (var coloumn in Model.ReporResultFiltre.Grid.Column)
+        {
+            var tmp = grid.Column(coloumn.Name, coloumn.Header);
+            headers.Add(tmp);
+
+        }
+        <div class="row">
+            <div class="table-responsive">
+                @grid.GetHtml(
+                 tableStyle: "table table-striped jambo_table bulk_action",
+                 alternatingRowStyle: "alternate",
+                 headerStyle: "headings",
+                 selectedRowStyle: "select",
+
+                 mode: WebGridPagerModes.All,
+                 firstText: "<< First",
+                 previousText: "< Prev",
+                 nextText: "Next >",
+                 lastText: "Last >>",
+                 columns: grid.Columns(
+                   headers.ToArray()
+                 )
+         )
+            </div>
+        </div>
+            <div class="row">
+
+               
+
+                    Total ligne : @Html.Label(Model.ReporResultFiltre.ResultCount.ToString())
+                    page : @Html.Label((Model.ReporResultFiltre.CurrentPage + 1).ToString())
+                    Total Page : @Html.Label(Model.ReporResultFiltre.PageCount.ToString())
+
+          </div>
+                <div class="row">
+
+                    @using (Html.BeginForm("ListReport", "Home", new { name = "pager", id = "Pagerid" }))
+                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Label("Page : ")
+                                        @Html.TextBox("pageNumbre", (Model.ReporResultFiltre.CurrentPage + 1));
+                        <input type="submit" value="OK" class="btn btn-default" />
+
+                    }
+                </div>
+           
+        
+                <div class="row">
+                    <div>@Html.ActionLink("Export Excel", "ExcelExport");</div>
+                </div>
+          
+           
+                }
+            </div></div>
