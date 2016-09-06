@@ -44,6 +44,8 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
         public List<Graph> GraphList { get; set; }
 
         public string path { get; set; }
+
+        public Stack<string> Log { get; set; }
     
 
       

@@ -190,6 +190,8 @@ namespace SQLi.NoSql.API.MongoR.Lib
                                                                 );
 
             report.ResultCount = result.Item2;
+            report.Log = result.Item3;
+
             long rem = 0;
 
             report.PageCount = Math.DivRem(report.ResultCount, report.Grid.MaxInPage, out rem);
@@ -216,6 +218,8 @@ namespace SQLi.NoSql.API.MongoR.Lib
             BuildExcelResult(report, result.Item1);
             BuildChartsData(report);
 
+            report.Log = result.Item3;
+
             return report;
         }
 
@@ -230,6 +234,7 @@ namespace SQLi.NoSql.API.MongoR.Lib
             var result = aggregationFrameWork.Execute(report.Query,-1,-1,-1);
 
             BuildExcelResult(report, result.Item1);
+            report.Log = result.Item3;
 
             return report;
         }

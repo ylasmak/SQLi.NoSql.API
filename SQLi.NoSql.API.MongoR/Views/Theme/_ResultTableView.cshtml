@@ -95,11 +95,12 @@
           </div>
                 <div class="row">
 
-                    @using (Html.BeginForm("ListReport", "Home", new { name = "pager", id = "Pagerid" }))
+                    @using (Html.BeginForm("Pagination", "Home"))
                     {
                                         @Html.AntiForgeryToken()
                                         @Html.Label("Page : ")
                                         @Html.TextBox("pageNumbre", (Model.CurrentReport.CurrentPage + 1));
+                                        @Html.Hidden("path",Model.Path)
                         <input type="submit" value="OK" class="btn btn-default" />
 
                     }

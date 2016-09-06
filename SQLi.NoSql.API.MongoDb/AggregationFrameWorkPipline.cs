@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Driver;
-
+using MongoDB.Driver.Linq;
 using MongoDB.Bson;
-using SQLi.NoSql.API.Collection.MongoR;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+
+
 
 namespace SQLi.NoSql.API.MongoDB
 {
@@ -21,39 +20,12 @@ namespace SQLi.NoSql.API.MongoDB
              _collection = database.GetCollection<BsonDocument>(collection);
         }
 
-        private static bool IsValidJson(string strInput)
-        {
-            strInput = strInput.Trim();
-            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
-                (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
-            {
-                try
-                {
-                    var obj = JToken.Parse(strInput);
-                    return true;
-                }
-                catch (JsonReaderException jex)
-                {
-                    //Exception in parsing json
-                    Console.WriteLine(jex.Message);
-                    return false;
-                }
-                catch (Exception ex) //some other exception
-                {
-                    Console.WriteLine(ex.ToString());
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        public Tuple<List<BsonDocument>, int> Execute(List<string> jsonDocument,
+        public Tuple<List<BsonDocument>, int, Stack<string>> Execute(List<string> jsonDocument,
                                           int maxInPageCount, int pageNumber,
                                          int resultCount)
         {
 
+            var log = new Stack<string>();
             var list = new List<BsonDocument>();
 
             foreach (var document in jsonDocument)
@@ -66,7 +38,9 @@ namespace SQLi.NoSql.API.MongoDB
             if (pageNumber == 0 && pageNumber != -1)
             {
 
-                resultCount = BuildCountQuery(list);
+                var tmp =  BuildCountQuery(list);
+                resultCount = tmp.Item1;
+                log.Push(tmp.Item2);
             }
 
             if (maxInPageCount != -1)
@@ -77,10 +51,20 @@ namespace SQLi.NoSql.API.MongoDB
                 list = AddSkipAndTackeStages(list, skip, maxInPageCount);
             }
 
-            var option = new AggregateOptions() { AllowDiskUse = true };
-           var result =  _collection.Aggregate<BsonDocument>(list.ToList(), option).ToList();
+           var option = new AggregateOptions() { AllowDiskUse = true };
 
-           return new Tuple<List<BsonDocument>, int>(result, resultCount);
+            var statTime = DateTime.Now.Ticks;
+
+            var result =  _collection.Aggregate<BsonDocument>(list, option).ToList();
+
+
+            var endDate = DateTime.Now.Ticks;
+            var duration = endDate - statTime;
+            var resultDuration = TimeSpan.FromTicks(duration).TotalSeconds;
+
+            log.Push(string.Format("{0} - {1} : Duration (s) {2} ",  TimeSpan.FromTicks( statTime).ToString(), BuildStringQuery(list.Select(p => p.ToString()).ToArray()), resultDuration));
+
+           return new Tuple<List<BsonDocument>, int, Stack<string>>(result, resultCount,log);
 
         }
 
@@ -91,7 +75,7 @@ namespace SQLi.NoSql.API.MongoDB
            return list;
         }
 
-        private int BuildCountQuery(List<BsonDocument> query)
+        private Tuple< int,string> BuildCountQuery(List<BsonDocument> query)
         {
 
             int toalQuery = 0;
@@ -126,7 +110,15 @@ namespace SQLi.NoSql.API.MongoDB
 
             tmpQuery.Add(group);
 
+            var statTime = DateTime.Now.Ticks;
+
             var resultTmpQuery = _collection.Aggregate<BsonDocument>(tmpQuery.ToList()).ToList();
+
+            var endDate = DateTime.Now.Ticks;
+            var duration = endDate - statTime;
+            var resultDuration = TimeSpan.FromTicks(duration).TotalSeconds;
+
+            var log =string.Format("{0} - {1} : Duration (s) {2} ", TimeSpan.FromTicks(statTime).ToString(), BuildStringQuery(tmpQuery.Select(p => p.ToString()).ToArray()), resultDuration);
 
             var res = resultTmpQuery.Select(x => x.ToDynamic()).ToList();
             if(res.Count >0 )
@@ -138,7 +130,23 @@ namespace SQLi.NoSql.API.MongoDB
                 toalQuery = 0;
             }
 
-            return toalQuery;
+            return new Tuple<int, string>( toalQuery, log);
+
+        }
+
+
+        private string BuildStringQuery(string[] stages)
+        {
+            if (stages.Count() == 1) return stages[0];
+            var st = new System.Text.StringBuilder();
+            
+            foreach(var stage in stages)
+            {
+                st.AppendLine(stage);
+                st.AppendLine(",");
+            }
+
+           return st.ToString(0, st.Length - 2);
 
         }
 

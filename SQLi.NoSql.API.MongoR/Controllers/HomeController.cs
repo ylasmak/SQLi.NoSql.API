@@ -56,16 +56,16 @@ namespace SQLi.NoSql.API.MongoR.Controllers
             return RedirectToAction("ListReport", new { path= path });
         }
 
-        public ActionResult Pagination(string pageNumbre)
+        public ActionResult Pagination(string pageNumbre,string path)
         {
             var model = new ReportConfigurationModel();
           
-            model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
+            model.CurrentReport = ConfigurationModel.GetReportConfiguration(path, true);
             model.CurrentReport.CurrentPage = int.Parse( pageNumbre) - 1;
 
             AggregationQueryProcessing.BuildAggregationPiplineFrameWorkQuery(model.CurrentReport);
 
-            return RedirectToAction("ReportDetails");
+            return RedirectToAction("ListReport", new {  path = path });
         }
 
         public ActionResult ExcelExport(string file)
@@ -119,10 +119,12 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         }
 
 
-        public ActionResult ListReport(string path)
+        public ActionResult ListReport(string path,string page = null)
         {
-
-          
+            if(!string.IsNullOrEmpty(page))
+            {
+                return RedirectToAction("Pagination", new { pageNumbre = page,path = path });
+            }
 
             if (!string.IsNullOrEmpty(path))
             {
@@ -140,5 +142,5 @@ namespace SQLi.NoSql.API.MongoR.Controllers
             }
             return View();
         }   
-        }
+     }
 }
