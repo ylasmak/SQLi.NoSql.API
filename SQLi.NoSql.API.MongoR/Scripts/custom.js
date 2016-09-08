@@ -66,11 +66,7 @@ $(document).ready(function() {
 
         $RIGHT_COL.css('min-height', contentHeight);
 
-        if ($(".sortableUI") != null && $(".sortableUI").length > 0)
-        {
-            $(".sortableUI").sortable();
-            $(".sortableUI").disableSelection();
-        }
+        
     };
 
     $SIDEBAR_MENU.find('a').on('click', function(ev) {

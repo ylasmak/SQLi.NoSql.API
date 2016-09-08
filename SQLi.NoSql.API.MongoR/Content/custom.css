@@ -1,6 +1,6 @@
 ﻿@charset "UTF-8";
 .left_col {
-  background: #2A3F54; }
+  background: #6CB754; }
 
 .nav-sm .container.body .col-md-3.left_col {
   min-height: 100%;
@@ -210,7 +210,7 @@ body .container.body .right_col {
 .nav_title {
   width: 230px;
   float: left;
-  background: #2A3F54;
+  background: #6CB754;
   border-radius: 0;
   height: 57px; }
 
@@ -285,7 +285,7 @@ body .container.body .right_col {
 .bg-white {
   background: #fff !important;
   border: 1px solid #fff !important;
-  color: #73879C; }
+  color: #6CB754; }
 
 .bg-green {
   background: #1ABB9C !important;
@@ -329,7 +329,7 @@ body .container.body .right_col {
 
 body {
   color: #73879C;
-  background: #2A3F54;
+  background: #6CB754;
   font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -557,7 +557,7 @@ a:hover, a:focus {
 
 .nav.side-menu > li.active > a {
   text-shadow: rgba(0, 0, 0, 0.25) 0 -1px 0;
-  background: linear-gradient(#334556, #2C4257), #2A3F54;
+  background: linear-gradient(#6CC754, #6CD754), #6CB754;
   box-shadow: rgba(0, 0, 0, 0.25) 0 1px 0, inset rgba(255, 255, 255, 0.16) 0 1px 0; }
 
 .navbar-brand, .navbar-nav > li > a {
@@ -632,7 +632,7 @@ a:hover, a:focus {
 
 .toggle a i {
   font-size: 26px; }
-
+f
 .nav.child_menu > li > a {
   color: rgba(255, 255, 255, 0.75);
   font-size: 12px;
@@ -640,7 +640,7 @@ a:hover, a:focus {
 
 .panel_toolbox {
   float: right;
-  min-width: 70px; }
+  }
 
 .panel_toolbox > li {
   float: left;
@@ -1421,7 +1421,7 @@ span.right {
   padding: 5px 0 0 0;
   position: fixed;
   width: 230px;
-  background: #2A3F54; }
+  background: #6CB754; }
 
 .sidebar-footer a {
   padding: 7px 0 3px;

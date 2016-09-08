@@ -10,25 +10,12 @@
 
 <div class="x_panel">
     <div class="x_title">
-        <h2>Transaction Result   <small>Exemple Teste </small></h2>
+        <h2> Result   </h2>
         <ul class="nav navbar-right panel_toolbox">
             <li>
                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
             </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li>
-                        <a href="#">Settings 1</a>
-                    </li>
-                    <li>
-                        <a href="#">Settings 2</a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a class="close-link"><i class="fa fa-close"></i></a>
-            </li>
+            
         </ul>
         <div class="clearfix"></div>
     </div>
@@ -84,15 +71,20 @@
          )
             </div>
         </div>
-            <div class="row">
 
-               
+        <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+            Total ligne : @Html.Label(Model.CurrentReport.ResultCount.ToString())
+        </div>
 
-                    Total ligne : @Html.Label(Model.CurrentReport.ResultCount.ToString())
-                    page : @Html.Label((Model.CurrentReport.CurrentPage + 1).ToString())
-                    Total Page : @Html.Label(Model.CurrentReport.PageCount.ToString())
+        <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+            page : @Html.Label((Model.CurrentReport.CurrentPage + 1).ToString())
+        </div>
 
-          </div>
+        <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+            Total Page : @Html.Label(Model.CurrentReport.PageCount.ToString())
+        </div>
+         
+
                 <div class="row">
 
                     @using (Html.BeginForm("Pagination", "Home"))
@@ -108,7 +100,7 @@
            
         
                 <div class="row">
-                    <div>@Html.ActionLink("Export Excel", "ExcelExport");</div>
+                    <div>@Html.ActionLink("Export Excel", "ExcelExport")</div>
                 </div>
           
            

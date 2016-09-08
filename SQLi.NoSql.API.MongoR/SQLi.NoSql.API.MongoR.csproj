@@ -4063,10 +4063,9 @@
     <Content Include="Content\global\scripts\datatable.js" />
     <Content Include="Content\global\scripts\metronic.js" />
     <Content Include="Content\green.css" />
-    <Content Include="Content\images\favicon_0.ico" />
     <Content Include="Content\images\file.png" />
     <Content Include="Content\images\Folder.png" />
-    <Content Include="Content\images\logo.png" />
+    <Content Include="Content\images\greenleaf.gif" />
     <Content Include="Content\images\user.png" />
     <Content Include="Content\nprogress.css" />
     <Content Include="favicon.ico" />
