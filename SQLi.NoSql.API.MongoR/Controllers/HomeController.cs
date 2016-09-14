@@ -68,11 +68,11 @@ namespace SQLi.NoSql.API.MongoR.Controllers
             return RedirectToAction("ListReport", new {  path = path });
         }
 
-        public ActionResult ExcelExport(string file)
+        public ActionResult ExcelExport(string file,string path)
         {
             var model = new ReportConfigurationModel();
           
-            model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
+            model.CurrentReport = ConfigurationModel.GetReportConfiguration(path, true);
 
             AggregationQueryProcessing.ExcelExport(model.CurrentReport);
 
@@ -103,8 +103,8 @@ namespace SQLi.NoSql.API.MongoR.Controllers
                     Response.End();
                 }
             }
-
-            return RedirectToAction("ReportDetails");
+            
+            return RedirectToAction("ListReport", new { path = path });
         }
 
 
@@ -112,8 +112,8 @@ namespace SQLi.NoSql.API.MongoR.Controllers
         {
             var model = new ReportConfigurationModel();
           
-            model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
-            AggregationQueryProcessing.BuildGraphicalCharts(model.CurrentReport);
+            //model.CurrentReport = ConfigurationModel.GetReportConfiguration("TransactionDetails", true);
+            //AggregationQueryProcessing.BuildGraphicalCharts(model.CurrentReport);
 
             return View("dynamicCharts", model);
         }

@@ -7,54 +7,53 @@
 @{
     ViewBag.Title = "ReportDetails";
 }
-
-<div class="x_panel">
+<div>
     <div class="x_title">
         <h2> Result   </h2>
         <ul class="nav navbar-right panel_toolbox">
             <li>
                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
             </li>
-            
+
         </ul>
         <div class="clearfix"></div>
     </div>
 
     <div class="x_content">
-    @if (Model.CurrentReport != null && Model.CurrentReport.Grid.ResultSet != null &&
-                                                           Model.CurrentReport.Grid.ResultSet.Tables.Count > 0)
-    {
-        //Dipalying table header
-        var cpt = Model.CurrentReport.CurrentPage * Model.CurrentReport.Grid.MaxInPage;
-
-        var headers = new List<WebGridColumn>();
-
-
-        var result = new List<dynamic>();
-
-        foreach (DataRow row in Model.CurrentReport.Grid.ResultSet.Tables[0].Rows)
+        @if (Model.CurrentReport != null && Model.CurrentReport.Grid.ResultSet != null &&
+                                                                   Model.CurrentReport.Grid.ResultSet.Tables.Count > 0)
         {
-            var obj = (IDictionary<string, object>)new ExpandoObject();
-            foreach (DataColumn col in Model.CurrentReport.Grid.ResultSet.Tables[0].Columns)
+            //Dipalying table header
+            var cpt = Model.CurrentReport.CurrentPage * Model.CurrentReport.Grid.MaxInPage;
+
+            var headers = new List<WebGridColumn>();
+
+
+            var result = new List<dynamic>();
+
+            foreach (DataRow row in Model.CurrentReport.Grid.ResultSet.Tables[0].Rows)
             {
-                obj.Add(col.ColumnName, row[col.ColumnName]);
+                var obj = (IDictionary<string, object>)new ExpandoObject();
+                foreach (DataColumn col in Model.CurrentReport.Grid.ResultSet.Tables[0].Columns)
+                {
+                    obj.Add(col.ColumnName, row[col.ColumnName]);
+                }
+                result.Add(obj);
             }
-            result.Add(obj);
-        }
 
-        var grid = new WebGrid(rowsPerPage: Model.CurrentReport.Grid.MaxInPage, canPage: true);
+            var grid = new WebGrid(rowsPerPage: Model.CurrentReport.Grid.MaxInPage, canPage: true);
 
-        grid.Bind(result, autoSortAndPage: false, rowCount: Model.CurrentReport.ResultCount);
+            grid.Bind(result, autoSortAndPage: false, rowCount: Model.CurrentReport.ResultCount);
 
-        foreach (var coloumn in Model.CurrentReport.Grid.Column)
-        {
-            var tmp = grid.Column(coloumn.Name, coloumn.Header);
-            headers.Add(tmp);
+            foreach (var coloumn in Model.CurrentReport.Grid.Column)
+            {
+                var tmp = grid.Column(coloumn.Name, coloumn.Header);
+                headers.Add(tmp);
 
-        }
-        <div class="row">
-            <div class="table-responsive">
-                @grid.GetHtml(
+            }
+            <div class="row">
+                <div class="table-responsive">
+                    @grid.GetHtml(
                  tableStyle: "table table-striped jambo_table bulk_action",
                  alternatingRowStyle: "alternate",
                  headerStyle: "headings",
@@ -69,40 +68,27 @@
                    headers.ToArray()
                  )
          )
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
-            Total ligne : @Html.Label(Model.CurrentReport.ResultCount.ToString())
-        </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                Total ligne : @Html.Label(Model.CurrentReport.ResultCount.ToString())
+            </div>
 
-        <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
-            page : @Html.Label((Model.CurrentReport.CurrentPage + 1).ToString())
-        </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                page : @Html.Label((Model.CurrentReport.CurrentPage + 1).ToString())
+            </div>
 
-        <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
-            Total Page : @Html.Label(Model.CurrentReport.PageCount.ToString())
-        </div>
-         
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                Total Page : @Html.Label(Model.CurrentReport.PageCount.ToString())
+            </div>
 
-                <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                <div>@Html.ActionLink("Export Excel", "ExcelExport",new { path = Model.Path})</div>
+            </div>
+        }
+    </div>
 
-                    @using (Html.BeginForm("Pagination", "Home"))
-                    {
-                                        @Html.AntiForgeryToken()
-                                        @Html.Label("Page : ")
-                                        @Html.TextBox("pageNumbre", (Model.CurrentReport.CurrentPage + 1));
-                                        @Html.Hidden("path",Model.Path)
-                        <input type="submit" value="OK" class="btn btn-default" />
 
-                    }
-                </div>
-           
-        
-                <div class="row">
-                    <div>@Html.ActionLink("Export Excel", "ExcelExport")</div>
-                </div>
-          
-           
-                }
-            </div></div>
+
+</div>

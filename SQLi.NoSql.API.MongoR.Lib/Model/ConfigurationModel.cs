@@ -16,6 +16,7 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
 
         private static Dictionary<string, Report> _configDictionnary;
         private static Nodes _nodeTree;
+        private static Nodes _currentNode;
         private static string configurationFolder
         {
             get
@@ -40,16 +41,25 @@ namespace SQLi.NoSql.API.MongoR.Lib.Model
         public static Tuple<string[],string[]> GetCurrentConfiguration(string node = null)
         {
 
-            if(string.IsNullOrEmpty(node))
+            if (string.IsNullOrEmpty(node))
             {
-                var files = NodeTree.Report.ToArray();
-                var directories = NodeTree.Folder.Select(p => p.NodeName).ToArray();
-
-                return new Tuple<string[], string[]>(files, directories);
+                _currentNode = NodeTree;
             }
-            return null;
+            else
+            {
+                _currentNode = _currentNode.Folder.First(p => p.NodeName == node);
+            }
+
+            var files = _currentNode.Report.ToArray();
+            var directories = _currentNode.Folder.Select(p => p.NodeName).ToArray();
+
+            return new Tuple<string[], string[]>(files, directories);                  
+
         }
 
+     
+           
+        
         public static void LoadReportConfiguration(string path = null,Nodes node = null)
         {
             if (_configDictionnary == null)
